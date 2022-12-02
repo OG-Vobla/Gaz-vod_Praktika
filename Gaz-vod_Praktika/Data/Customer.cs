@@ -12,7 +12,9 @@ namespace Gaz_vod_Praktika.Data
             Department = department;
             Post = post;
 		}
+        [BsonIgnoreIfNull]
         public string Department { get { return department; } set { department = value; } }
+        [BsonIgnoreIfNull]
         public string Post { get { return post; } set { post = value; } }
     }
 }

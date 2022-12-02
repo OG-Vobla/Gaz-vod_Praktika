@@ -29,8 +29,8 @@
 		<input  type="password" @bind-value="@PasswordConfirmation" />
 	</p>
 	<p>
-		Email
-		<input  type="text" @bind-value="@Email" />
+	Email example: example@mail.ru
+	<input  type="text" @bind-value="@Email" />
 	</p>
 	<p>
 		FName
@@ -45,19 +45,21 @@
 		<input type="text" @bind-value="@Patronymic" />
 	</p>
 	<p>
-		Phone
-		<input type="text" @bind-value="@Phone" />
+	Phone example: +79196248721 or 89196248721 
+	<input type="text" @bind-value="@Phone" />
 	</p>
 <p>
 
 </p>
-	<p class="Kind">
-		<button class="btn btn-primary" onclick="@CreateCustomer">Create Customer</button>
-
-	<button class="btn btn-primary" onclick="@CreateDesigner">Create Designer</button>
-
-	<button class="btn btn-primary" onclick="@CreateBuilder">Create Builder</button>
+		<p>
+	<select class="form-control" @bind = "KindOfUser">
+	<option value="Customer">Customer</option>
+		<option value="Customer">Designer</option>
+		<option value="Customer">Builder</option>
+		</select>
+	
 </p>
+<p><button class="btn btn-primary" onclick="@CreateUser">Create Customer</button></p>
 
 	<button class="btn btn-primary" @onclick="Authorization">Sign in</button>
 
@@ -73,47 +75,56 @@
 	private string Phone = "";
 	private string Message = "";
 	private string KindOfUser = "";
-	private void CreateCustomer()
-	{ KindOfUser = "Customer"; CreateUser(); }
-	private void CreateDesigner()
-	{ KindOfUser = "Designer"; CreateUser(); }
-	private void CreateBuilder()
-	{ KindOfUser = "Builder"; CreateUser(); }
 	private void CreateUser()
 	{
 
-		if (Login != "" && Email != "" && FName != "" && LName != "" && Password != "" && PasswordConfirmation != "" && Patronymic != "" && Phone != "")
+		if (Login != "" && Email != "" && FName != "" && LName != "" && Password != "" && PasswordConfirmation != "" && Patronymic != "" && Phone != ""&& KindOfUser != "")
 		{
-			if (MongoDb.FindUser(Login) == null)
+			if(Check())
 			{
-				if (Password == PasswordConfirmation)
+				if (!IsNumber(LName) && !IsNumber(FName) && !IsNumber(Patronymic))
 				{
-					User user = new User(Login, Password, FName, LName, Patronymic, Phone, Email);
-					switch (KindOfUser)
+					if (MongoDb.FindUser(Login) == null)
 					{
-						case ("Customer"):
-							user = new Builder(Login, Password, FName, LName, Patronymic, Phone, Email, "", "", "", "", "");
-							break;
-						case ("Designer"):
-							user = new Designer(Login, Password, FName, LName, Patronymic, Phone, Email, "", "", "", "", "", "");
-							break;
-						case ("Builder"):
-							user = new Customer(Login, Password, FName, LName, Patronymic, Phone, Email, "", "");
-							break;
+						if (Password == PasswordConfirmation)
+						{
+							User user = new User(Login, Password, FName, LName, Patronymic, Phone, Email);
+							switch (KindOfUser)
+							{
+								case ("Customer"):
+									user = new Customer(Login, Password, FName, LName, Patronymic, Phone, Email, "", "");
+									break;
+								case ("Designer"):
+									user = new Designer(Login, Password, FName, LName, Patronymic, Phone, Email, "", "", "", "", "", "");
+									break;
+								case ("Builder"):
+									user = new Builder(Login, Password, FName, LName, Patronymic, Phone, Email, "", "", "", "", "");
+									break;
+							}
+							MongoDb.AddToDBUser(user);
+							singleton.SetUser(user);
+							navManager.NavigateTo("mainpage");
+						}
+						else
+						{
+							Message = "Passwords do not match";
+						}
 					}
-					MongoDb.AddToDBUser(user);
-					singleton.SetUser(user);
-					navManager.NavigateTo("mainpage");
+					else
+					{
+						Message = "Login already";
+					}
 				}
 				else
 				{
-					Message = "Passwords do not match";
+					Message = "Initials cannot contain numbers";
 				}
 			}
-			else
-			{
-				Message = "Login already";
+			else{
+				Message = "Email or Phone incorect";
 			}
+
+
 		}
 		else
 		{
@@ -124,6 +135,67 @@
 	private void Authorization()
 	{
 		navManager.NavigateTo("authorization");
+	}
+	private bool Check()
+	{
+		bool cnt = false;
+		if (IsValidEmail(Email))
+		{
+			if (Phone[0] == '+' && Phone[1] == '7' && Phone.Length == 12 || Phone[0] == '8' && Phone.Length == 11)
+			{
+				string pho = Phone;
+				try
+				{
+					pho = Phone.Remove('+');
+				}
+				catch { }
+				cnt = IsNumber(pho);
+			}
+
+		}
+		return cnt;
+
+
+	}
+	private bool IsEmail()
+	{
+		try
+		{
+			var addr = new System.Net.Mail.MailAddress(Email);
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool IsNumber(string value)
+	{
+		foreach (var i in value)
+		{
+			if (i >= '0' && i <= '9')
+			{
+				//Есть число
+				return true;
+			}
+
+		}
+		return false;
+	}
+	
+	public bool IsValidEmail(string email)
+	{
+	string pattern = @"^[-a-zA-Z0-9][-.a-zA-Z0-9]*@[-.a-zA-Z0-9]+(\.[-.a-zA-Z0-9]+)*\.
+    (com|edu|info|gov|int|mil|net|org|biz|name|museum|coop|aero|pro|tv|[a-zA-Z]{2})$";
+
+	Regex check = new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
+	bool valid = false;
+
+	if (string.IsNullOrEmpty(email)) valid = false;
+	else valid = check.IsMatch(email);
+
+	return valid;
 	}
 }
 

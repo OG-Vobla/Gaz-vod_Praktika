@@ -1,16 +1,21 @@
 ﻿@inherits LayoutComponentBase
-
+@inject SingletonServise singleton
 <PageTitle>Gaz-vod_Praktika</PageTitle>
 
 <div class="page">
 
     <main>
-        <div class="top-row px-4">
-            <a href="personalAccount">My Account</a>
-        </div>
-
+        @if(!(singleton.GetUser() == null))
+        {
+            <div class="top-row px-4">
+                <a href="personalAccount">My Account</a>
+            </div>
+        }
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+@code{
+
+}

@@ -1,7 +1,242 @@
 ﻿@page "/personalAccount"
 
+@inject SingletonServise singleton
+@inject NavigationManager navManager
+
 <h3>PersonalAccount</h3>
+<div><p class="Message">@Message</p></div>
+	<p>
+		Login
+		<input  type="text" name="login" @bind-value="@Login" />
+	</p>
+	<p>
+		New Password
+		<input  type="password" @bind-value="@Password" />
+	</p>
+	<p>
+		Previous Password
+		<input  type="password" @bind-value="@PasswordConfirmation" />
+	</p>
+	<p>
+	Email example: example@mail.ru
+	<input  type="text" @bind-value="@Email" />
+	</p>
+	<p>
+		FName
+		<input  type="text" @bind-value="@FName" />
+	</p>
+	<p>
+		LName
+		<input  type="text" @bind-value="@LName" />
+	</p>
+	<p>
+		Patronymic
+		<input type="text" @bind-value="@Patronymic" />
+	</p>
+	<p>
+	Phone example: +79196248721 or 89196248721 
+	<input type="text" @bind-value="@Phone" />
+	</p>
+
+	@if(singleton.GetUser().GetType().Name == "Customer")
+	{
+		<p>
+			Depatament
+			<input type="text" @bind-value="@Departament" />
+		</p>
+		<p>
+			Post
+			<input type="text" @bind-value="@Post" />
+		</p>
+	}
+	@if (singleton.GetUser().GetType().Name == "Builder")
+	{
+	<p>
+		OGRN
+		<input type="text" @bind-value="@OGRN" />
+	</p>
+	<p>
+		INN
+		<input type="text" @bind-value="@INN" />
+	</p>
+	<p>
+		KPP
+		<input type="text" @bind-value="@KPP" />
+	</p>
+	<p>
+		Adress
+		<input type="text" @bind-value="@Adress" />
+	</p>
+	<p>
+		HeadExecutiveCommittee
+		<input type="text" @bind-value="@HeadExecutiveCommittee" />
+	</p>
+	}
+@if (singleton.GetUser().GetType().Name == "Designer")
+{
+	<p>
+		OGRN
+		<input type="text" @bind-value="@OGRN" />
+	</p>
+	<p>
+		INN
+		<input type="text" @bind-value="@INN" />
+	</p>
+	<p>
+		KPP
+		<input type="text" @bind-value="@KPP" />
+	</p>
+	<p>
+		Adress
+		<input type="text" @bind-value="@Adress" />
+	</p>
+	<p>
+		Director
+		<input type="text" @bind-value="@Director" />
+	</p>
+	<p>
+		ChiefProjectEngineer
+		<input type="text" @bind-value="@ChiefProjectEngineer" />
+	</p>
+}
+	<p>
+	<button class="btn btn-primary" onclick="@LogOut">LogOut</button>
+	</p>
+<p>
+	<button class="btn btn-primary" onclick="@SaveChanges">Save Changes</button>
+</p>
 
 @code {
+	private string Login = "";
+	private string Password = "";
+	private string PasswordConfirmation = "";
+	private string Email = "";
+	private string FName ="";
+	private string LName = "";
+	private string Patronymic = "";
+	private string Phone = "";
+	private string Message = "";
+	private string Departament = "";
+	private string Post = "";
+	private string OGRN = "";
+	private string INN = "";
+	private string KPP = "";
+	private string Adress = "";
+	private string HeadExecutiveCommittee = "";
+	private string Director = "";
+	private string ChiefProjectEngineer = "";
 
+	protected override void OnInitialized()
+	{
+		Login = singleton.GetUser().Login;
+		Password = singleton.GetUser().Password;
+		Email = singleton.GetUser().Email;
+		FName = singleton.GetUser().FName;
+		LName = singleton.GetUser().LName;
+		Patronymic = singleton.GetUser().Patronymic;
+		Phone = singleton.GetUser().Phone;
+	}
+	private void LogOut()
+	{
+		singleton.SetUser(null);
+		navManager.NavigateTo("");
+	}
+	private void SaveChanges()
+	{
+		if ((Login != "" && Email != "" && FName != "" && LName != "" && Patronymic != "" && Phone != "") && (Departament != "" && Post != "" || OGRN != "" && INN != "" && Adress != "" && KPP != "" && HeadExecutiveCommittee != "" || OGRN != "" && INN != "" && Adress != "" && KPP != "" && Director != "" && ChiefProjectEngineer != ""))
+		{
+			if (Check())
+			{
+				if (!IsNumber(LName) && !IsNumber(FName) && !IsNumber(Patronymic) && ((singleton.GetUser().GetType().Name == "Customer" && (!IsNumber(Departament) && !IsNumber(Post))) || (singleton.GetUser().GetType().Name == "Builder" && ((IsNumber(OGRN) && OGRN.Length == 13) && (IsNumber(INN) && INN.Length == 10) && (IsNumber(KPP) && KPP.Length == 9) && !IsNumber(HeadExecutiveCommittee))) || (singleton.GetUser().GetType().Name == "Designer" && ((IsNumber(OGRN) && OGRN.Length == 13) && (IsNumber(INN) && INN.Length == 10) && (IsNumber(KPP) && KPP.Length == 9) && !IsNumber(Director) && !IsNumber(ChiefProjectEngineer)))))
+				{
+					if (PasswordConfirmation == singleton.GetUser().Password || (PasswordConfirmation == "" && Password == singleton.GetUser().Password))
+						{
+							User user = new User(Login, Password, FName, LName, Patronymic, Phone, Email);
+						switch (singleton.GetUser().GetType().Name)
+							{
+								case ("Customer"):
+								user = new Customer(Login, Password, FName, LName, Patronymic, Phone, Email, Departament, Post);
+								MongoDb.ReplaceUser(singleton.GetUser().Login, user);
+								singleton.SetUser(user);
+								navManager.NavigateTo("customerPage");
+									break;
+								case ("Designer"):
+								user = new Designer(Login, Password, FName, LName, Patronymic, Phone, Email, OGRN, INN, KPP, Adress, Director, ChiefProjectEngineer);
+								MongoDb.ReplaceUser(singleton.GetUser().Login, user);
+								singleton.SetUser(user);
+								navManager.NavigateTo("designerPage");
+								break;
+								case ("Builder"):
+								MongoDb.ReplaceUser(singleton.GetUser().Login, user);
+								singleton.SetUser(user);
+								navManager.NavigateTo("builderPage");
+								user = new Builder(Login, Password, FName, LName, Patronymic, Phone, Email, OGRN, INN, KPP, Adress, HeadExecutiveCommittee);
+									break;
+							}
+
+						}
+						else
+						{
+						Message = "Incorect previous password.";
+						}
+				}
+				else
+				{
+					Message = "Email or Phone incorect";
+				}
+			}
+			else
+			{
+				Message = "Initials cannot contain numbers.";
+			}
+
+
+		}
+		else
+		{
+			Message = "Not all fields are filled.";
+		}
+
+	}
+	private bool Check()
+	{
+		bool cnt = false;
+		if (IsValidEmail(Email))
+		{
+			if (Phone[0] == '+' && Phone[1] == '7' && Phone.Length == 12 || Phone[0] == '8' && Phone.Length == 11)
+			{
+				cnt = IsNumber(Phone.Remove('+'));
+			}
+
+		}
+		return cnt;
+
+
+	}
+	public bool IsValidEmail(string email)
+	{
+		string pattern = @"^[-a-zA-Z0-9][-.a-zA-Z0-9]*@[-.a-zA-Z0-9]+(\.[-.a-zA-Z0-9]+)*\.
+    (com|edu|info|gov|int|mil|net|org|biz|name|museum|coop|aero|pro|tv|[a-zA-Z]{2})$";
+
+		Regex check = new Regex(pattern, RegexOptions.IgnorePatternWhitespace);
+		bool valid = false;
+
+		if (string.IsNullOrEmpty(email)) valid = false;
+		else valid = check.IsMatch(email);
+
+		return valid;
+	}
+	private bool IsNumber(string value)
+	{
+		foreach (var i in value)
+		{
+			if (i >= '0' && i <= '9')
+			{
+				//Есть число
+				return true;
+			}
+
+		}
+		return false;
+	}
 }

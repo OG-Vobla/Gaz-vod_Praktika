@@ -32,8 +32,6 @@
 	private string Password = "";
 	public void LogIn()
 	{
-
-		navManager.NavigateTo("customerPage");
 		if (Login != "")
 		{
 			User autoUser = MongoDb.FindUser(Login);
@@ -50,7 +48,6 @@
 							navManager.NavigateTo("personalAccaunt");
 							break;
 					}
-					
 					singleton.SetUser(autoUser);
 				}
 				else 
@@ -68,4 +65,8 @@
 	{
 		navManager.NavigateTo("registration");
 	}
+	    protected override void OnInitialized()
+    {
+        singleton.SetUser(null);
+    }
 }

@@ -20,10 +20,15 @@ namespace Gaz_vod_Praktika.Data
             Adress = adress;
             HeadExecutiveCommittee = headExecutiveCommittee;
         }
+        [BsonIgnoreIfNull]
         public string OGRN { get { return Ogrn; } set { Ogrn = value; } }
+        [BsonIgnoreIfNull]
         public string INN { get { return Inn; } set { Inn = value; } }
+        [BsonIgnoreIfNull]
         public string KPP { get { return Kpp; } set { Kpp = value; } }
+        [BsonIgnoreIfNull]
         public string Adress { get { return adress; } set { adress = value; } }
+        [BsonIgnoreIfNull]
         public string HeadExecutiveCommittee { get { return headExecutiveCommittee; } set { headExecutiveCommittee = value; } }
     }
 }

@@ -1,8 +1,11 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using Microsoft.AspNetCore.Routing;
+using System.Threading;
 
 namespace Gaz_vod_Praktika.Data
 {
+    [BsonKnownTypes(typeof(Builder), typeof(Designer), typeof(Customer))]
     public class User
     {
         private string login;
