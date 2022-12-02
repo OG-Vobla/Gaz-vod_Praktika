@@ -16,6 +16,16 @@ namespace Gaz_vod_Praktika.Data
         {
             user = newUser;
         }
+        private Project project;
+        public Project GetProject()
+        {
+            return project;
+        }
+
+        public void SetProject(Project project)
+        {
+            this.project = project;
+        }
     }
 
 }

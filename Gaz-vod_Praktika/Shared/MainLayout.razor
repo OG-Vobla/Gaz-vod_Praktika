@@ -9,6 +9,19 @@
         {
             <div class="top-row px-4">
                 <a href="personalAccount">My Account</a>
+            
+            @switch (singleton.GetUser().GetType().Name)
+            {
+                case"Designer":
+                <a href="designerProject">My projects</a>
+                    break;
+                case "Builder":
+                    <a href="builderProject">My projects</a>
+                    break;
+                case "Customer":
+                        <a href="customerParoject">My projects</a>
+                    break;
+            }
             </div>
         }
         <article class="content px-4">

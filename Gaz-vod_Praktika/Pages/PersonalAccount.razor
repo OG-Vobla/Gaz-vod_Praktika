@@ -37,8 +37,9 @@
 	Phone example: +79196248721 or 89196248721 
 	<input type="text" @bind-value="@Phone" />
 	</p>
-
-	@if(singleton.GetUser().GetType().Name == "Customer")
+@if (singleton.GetUser() != null)
+	{
+	@if (singleton.GetUser().GetType().Name == "Customer")
 	{
 		<p>
 			Depatament
@@ -51,60 +52,62 @@
 	}
 	@if (singleton.GetUser().GetType().Name == "Builder")
 	{
+		<p>
+			OGRN
+			<input type="text" @bind-value="@OGRN" />
+		</p>
+		<p>
+			INN
+			<input type="text" @bind-value="@INN" />
+		</p>
+		<p>
+			KPP
+			<input type="text" @bind-value="@KPP" />
+		</p>
+		<p>
+			Adress
+			<input type="text" @bind-value="@Adress" />
+		</p>
+		<p>
+			HeadExecutiveCommittee
+			<input type="text" @bind-value="@HeadExecutiveCommittee" />
+		</p>
+	}
+	@if (singleton.GetUser().GetType().Name == "Designer")
+	{
+		<p>
+			OGRN
+			<input type="text" @bind-value="@OGRN" />
+		</p>
+		<p>
+			INN
+			<input type="text" @bind-value="@INN" />
+		</p>
+		<p>
+			KPP
+			<input type="text" @bind-value="@KPP" />
+		</p>
+		<p>
+			Adress
+			<input type="text" @bind-value="@Adress" />
+		</p>
+		<p>
+			Director
+			<input type="text" @bind-value="@Director" />
+		</p>
+		<p>
+			ChiefProjectEngineer
+			<input type="text" @bind-value="@ChiefProjectEngineer" />
+		</p>
+	}
 	<p>
-		OGRN
-		<input type="text" @bind-value="@OGRN" />
+		<button class="btn btn-primary" onclick="@LogOut">LogOut</button>
 	</p>
 	<p>
-		INN
-		<input type="text" @bind-value="@INN" />
-	</p>
-	<p>
-		KPP
-		<input type="text" @bind-value="@KPP" />
-	</p>
-	<p>
-		Adress
-		<input type="text" @bind-value="@Adress" />
-	</p>
-	<p>
-		HeadExecutiveCommittee
-		<input type="text" @bind-value="@HeadExecutiveCommittee" />
+		<button class="btn btn-primary" onclick="@SaveChanges">Save Changes</button>
 	</p>
 	}
-@if (singleton.GetUser().GetType().Name == "Designer")
-{
-	<p>
-		OGRN
-		<input type="text" @bind-value="@OGRN" />
-	</p>
-	<p>
-		INN
-		<input type="text" @bind-value="@INN" />
-	</p>
-	<p>
-		KPP
-		<input type="text" @bind-value="@KPP" />
-	</p>
-	<p>
-		Adress
-		<input type="text" @bind-value="@Adress" />
-	</p>
-	<p>
-		Director
-		<input type="text" @bind-value="@Director" />
-	</p>
-	<p>
-		ChiefProjectEngineer
-		<input type="text" @bind-value="@ChiefProjectEngineer" />
-	</p>
-}
-	<p>
-	<button class="btn btn-primary" onclick="@LogOut">LogOut</button>
-	</p>
-<p>
-	<button class="btn btn-primary" onclick="@SaveChanges">Save Changes</button>
-</p>
+	
 
 @code {
 	private string Login = "";
@@ -158,7 +161,7 @@
 								user = new Customer(Login, Password, FName, LName, Patronymic, Phone, Email, Departament, Post);
 								MongoDb.ReplaceUser(singleton.GetUser().Login, user);
 								singleton.SetUser(user);
-								navManager.NavigateTo("customerPage");
+								navManager.NavigateTo("customerProject");
 									break;
 								case ("Designer"):
 								user = new Designer(Login, Password, FName, LName, Patronymic, Phone, Email, OGRN, INN, KPP, Adress, Director, ChiefProjectEngineer);

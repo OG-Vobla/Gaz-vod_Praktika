@@ -1,0 +1,25 @@
+﻿@page "/builderProject"
+
+@inject SingletonServise singleton
+@inject NavigationManager navManager
+<h3>BuilderProject</h3>
+@foreach (var project in MongoDb.FindAllProject())
+{
+    @if (project.BuilderLogin == singleton.GetUser().Login)
+    {
+        <tr>
+            <td>@project.Name</td>
+            <td>
+                <button type="button" class="btn btn-info" @onclick="() => OpenProject(project)">Open project</button>
+            </td>
+        </tr>
+    }
+
+}
+@code {
+    void OpenProject(Project project)
+    {
+        singleton.SetProject(project);
+        navManager.NavigateTo("projectInfo");
+    }
+}

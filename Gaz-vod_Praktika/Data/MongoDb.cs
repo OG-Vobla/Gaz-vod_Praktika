@@ -9,8 +9,6 @@ namespace Gaz_vod_Praktika.Data
         static IMongoDatabase UserDatabase;
         static IMongoCollection<User> UsersCollection;
         static IMongoCollection<Project> ProjectsCollection;
-        static IMongoCollection<VodDoc> VodDocCollection;
-        static IMongoCollection<GazDoc> GazDocCollection;
 
         static MongoDb()
         {
@@ -18,8 +16,6 @@ namespace Gaz_vod_Praktika.Data
             UserDatabase = client.GetDatabase("GazVodPraktika");
             UsersCollection = UserDatabase.GetCollection<User>("Users");
             ProjectsCollection = UserDatabase.GetCollection<Project>("Projects");
-            VodDocCollection = UserDatabase.GetCollection<VodDoc>("VodDoc");
-            GazDocCollection = UserDatabase.GetCollection<GazDoc>("GazDoc");
         }
         #region User
         public static void AddToDBUser(User newUser)
@@ -33,6 +29,28 @@ namespace Gaz_vod_Praktika.Data
         public static void ReplaceUser(string Login, User newUser)
         {
             UsersCollection.ReplaceOne(x => x.Login == Login, newUser);
+        }
+        public static List<User> FindAllDesigner()
+        {
+            var list = UsersCollection.Find(x => true).ToList();
+            var users = new List<User>();
+            foreach (var user in list)
+            {
+                if (user.GetType().Name == "Designer")
+                    users.Add(user);
+            }
+            return users;
+        }
+        public static List<User> FindAllBuilder()
+        {
+            var list = UsersCollection.Find(x => true).ToList();
+            var users = new List<User>();
+            foreach (var user in list)
+            {
+                if (user.GetType().Name == "Builder")
+                    users.Add(user);
+            }
+            return users;
         }
         #endregion
         #region Projects
@@ -48,33 +66,10 @@ namespace Gaz_vod_Praktika.Data
         {
             ProjectsCollection.ReplaceOne(x => x.Name == Name, newProject);
         }
-        #endregion
-        #region VodDoc
-        public static void AddToDBVodDoc(VodDoc newVodDoc)
+        public static List<Project> FindAllProject()
         {
-            VodDocCollection.InsertOne(newVodDoc);
-        }
-        public static VodDoc FindVodDoc(string DesignerLogin)
-        {
-            return VodDocCollection.Find(x => x.DesignerLogin == DesignerLogin).FirstOrDefault();
-        }
-        public static void ReplaceVodDoc(string DesignerLogin, VodDoc newVodDoc)
-        {
-            VodDocCollection.ReplaceOne(x => x.DesignerLogin == DesignerLogin, newVodDoc);
-        }
-        #endregion
-        #region GazDoc
-        public static void AddToDBGazDoc(GazDoc newGazDoc)
-        {
-            GazDocCollection.InsertOne(newGazDoc);
-        }
-        public static GazDoc FindGazDoc(string DesignerLogin)
-        {
-            return GazDocCollection.Find(x => x.DesignerLogin == DesignerLogin).FirstOrDefault();
-        }
-        public static void ReplaceGazDoc(string DesignerLogin, GazDoc newGazDoc)
-        {
-            GazDocCollection.ReplaceOne(x => x.DesignerLogin == DesignerLogin, newGazDoc);
+            return ProjectsCollection.Find(x => true).ToList();
+
         }
         #endregion
     }

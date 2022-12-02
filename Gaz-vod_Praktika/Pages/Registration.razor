@@ -54,8 +54,8 @@
 		<p>
 	<select class="form-control" @bind = "KindOfUser">
 	<option value="Customer">Customer</option>
-		<option value="Customer">Designer</option>
-		<option value="Customer">Builder</option>
+		<option value="Designer">Designer</option>
+		<option value="Builder">Builder</option>
 		</select>
 	
 </p>
@@ -103,7 +103,7 @@
 							}
 							MongoDb.AddToDBUser(user);
 							singleton.SetUser(user);
-							navManager.NavigateTo("mainpage");
+							navManager.NavigateTo("personalAccount");
 						}
 						else
 						{

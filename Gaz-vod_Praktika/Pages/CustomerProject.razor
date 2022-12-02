@@ -1,0 +1,66 @@
+﻿@page "/customerParoject"
+@inject SingletonServise singleton
+@inject NavigationManager navManager
+<h3>CustomerProject</h3>
+<p><p>
+    Name:
+<input @bind="NewProjectName" type="text" /></p>
+    Designer:
+    <select class="form-control" @bind="NewProjectDesigner">
+        @foreach(var i in MongoDb.FindAllDesigner())
+        {
+            <option>@i.Login</option>
+        }
+    </select>
+    Builder:
+    <select class="form-control" @bind="NewProjectBuilder">
+        @foreach (var i in MongoDb.FindAllBuilder())
+        {
+            <option>@i.Login</option>
+        }
+    </select>
+    Type:
+    <select class="form-control" @bind="TypeProject">
+        <option value="Gazification">Gazification</option>
+        <option value="Vodosnabjenie">Vodosnabjenie</option>
+    </select>
+    <button class="btn btn-primary" @onclick="Create">Create</button>
+</p>
+<p>
+    @foreach (var project in projects)
+    {
+        <tr>
+            <td>@project.Name</td>
+            <td>@project.DesignerLogin</td>
+            <td>@project.BuilderLogin</td>
+            <td>
+                <button type="button" class="btn btn-info" @onclick="() => OpenProject(project)">Open project</button>
+            </td>
+        </tr>
+    }
+</p>
+@code {
+    string NewProjectDesigner = "";
+    string NewProjectBuilder = "";
+    string NewProjectName = "";
+    string TypeProject = "";
+    List<Project> projects = new List<Project>();
+    void Create()
+    {
+        if (NewProjectName != "" && NewProjectBuilder != "" && NewProjectDesigner != "")
+        {
+            Project newProject = new Project(NewProjectName, TypeProject, singleton.GetUser().Login, NewProjectBuilder, NewProjectDesigner);
+            MongoDb.AddToDBProject(newProject);
+            OnInitialized();
+        }
+    }
+    void OpenProject(Project project)
+    {
+        singleton.SetProject(project);
+        navManager.NavigateTo("projectInfo");
+    }
+    protected override void OnInitialized()
+    {
+        projects = MongoDb.FindAllProject();
+    }
+}
